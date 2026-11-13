@@ -1,0 +1,34 @@
+{
+  "name": "central-solicitacoes-loading",
+  "version": "1.0.0",
+  "description": "Central de Solicitações Internas - Processo Seletivo Loading Desenvolvimento Jr.",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "build": "tsc",
+    "start:prod": "node dist/server.js",
+    "test": "tsx src/tests/requisitos.test.ts"
+  },
+  "keywords": [
+    "loading",
+    "central-de-solicitacoes",
+    "nodejs",
+    "typescript",
+    "sqlite",
+    "bootstrap5"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

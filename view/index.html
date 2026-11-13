@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Central de Solicitações | LOADING</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="bg-light app-layout">
+
+  <!-- CABEÇALHO FIXO DA PÁGINA -->
+  <header class="navbar navbar-expand-lg navbar-dark loading-navbar shadow-sm fixed-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="#">
+        <span class="brand-badge">LOADING</span>
+        <span class="vr mx-2 opacity-50"></span>
+        <span class="fw-semibold fs-6 text-white-50">Central de Solicitações Internas</span>
+      </a>
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-light btn-sm fw-semibold d-flex align-items-center gap-2 shadow-sm px-3 py-2" id="btnNovaSolicitacao">
+          <i class="bi bi-plus-circle-fill text-primary-loading"></i>
+          <span>Nova Solicitação</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTEÚDO CENTRAL ENTRE CABEÇALHO E RODAPÉ FIXOS -->
+  <main class="app-main container">
+
+    <!-- Alerta Global de Feedback (RF06) -->
+    <div id="feedbackContainer" class="mb-2"></div>
+
+    <!-- Cards de Resumo Compactos (KPIs de Status) -->
+    <section class="row g-2 mb-3 flex-shrink-0" aria-label="Resumo de solicitações">
+      <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm kpi-card kpi-total active-kpi" data-filter-status="">
+          <div class="card-body py-2 px-3 d-flex align-items-center justify-content-between">
+            <div>
+              <p class="text-muted extra-small fw-semibold text-uppercase mb-0">Total</p>
+              <h4 class="fw-bold mb-0" id="countTotal">0</h4>
+            </div>
+            <div class="kpi-icon bg-secondary bg-opacity-10 text-secondary">
+              <i class="bi bi-folder2-open"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm kpi-card kpi-aberta" data-filter-status="Aberta">
+          <div class="card-body py-2 px-3 d-flex align-items-center justify-content-between">
+            <div>
+              <p class="text-muted extra-small fw-semibold text-uppercase mb-0">Abertas</p>
+              <h4 class="fw-bold mb-0 text-primary" id="countAberta">0</h4>
+            </div>
+            <div class="kpi-icon bg-primary bg-opacity-10 text-primary">
+              <i class="bi bi-inbox-fill"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm kpi-card kpi-andamento" data-filter-status="Em andamento">
+          <div class="card-body py-2 px-3 d-flex align-items-center justify-content-between">
+            <div>
+              <p class="text-muted extra-small fw-semibold text-uppercase mb-0">Em Andamento</p>
+              <h4 class="fw-bold mb-0 text-warning-emphasis" id="countAndamento">0</h4>
+            </div>
+            <div class="kpi-icon bg-warning bg-opacity-15 text-warning-emphasis">
+              <i class="bi bi-arrow-repeat"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm kpi-card kpi-concluida" data-filter-status="Concluída">
+          <div class="card-body py-2 px-3 d-flex align-items-center justify-content-between">
+            <div>
+              <p class="text-muted extra-small fw-semibold text-uppercase mb-0">Concluídas</p>
+              <h4 class="fw-bold mb-0 text-success" id="countConcluida">0</h4>
+            </div>
+            <div class="kpi-icon bg-success bg-opacity-10 text-success">
+              <i class="bi bi-check2-circle"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Barra de Filtros e Busca (RF03 + Busca Textual) -->
+    <section class="card border-0 shadow-sm mb-3 flex-shrink-0">
+      <div class="card-body py-2 px-3">
+        <form id="formFiltros" class="row g-2 align-items-end">
+          <div class="col-12 col-md-5">
+            <label for="filtroBusca" class="form-label extra-small fw-semibold text-secondary mb-1">
+              <i class="bi bi-search me-1"></i>Busca Textual (Título, Descrição ou Categoria)
+            </label>
+            <input
+              type="text"
+              id="filtroBusca"
+              class="form-control form-control-sm"
+              placeholder="Ex.: laboratório, GitHub, infraestrutura..."
+            />
+          </div>
+          <div class="col-6 col-md-3">
+            <label for="filtroStatus" class="form-label extra-small fw-semibold text-secondary mb-1">
+              <i class="bi bi-funnel me-1"></i>Status (RF03)
+            </label>
+            <select id="filtroStatus" class="form-select form-select-sm">
+              <option value="">Todos os status</option>
+              <option value="Aberta">Aberta</option>
+              <option value="Em andamento">Em andamento</option>
+              <option value="Concluída">Concluída</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-2">
+            <label for="filtroPrioridade" class="form-label extra-small fw-semibold text-secondary mb-1">
+              <i class="bi bi-flag me-1"></i>Prioridade (RF03)
+            </label>
+            <select id="filtroPrioridade" class="form-select form-select-sm">
+              <option value="">Todas</option>
+              <option value="alta">Alta</option>
+              <option value="média">Média</option>
+              <option value="baixa">Baixa</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-2">
+            <button type="button" id="btnLimparFiltros" class="btn btn-sm btn-outline-secondary w-100" title="Limpar todos os filtros">
+              <i class="bi bi-x-lg me-1"></i>Limpar
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- SOLICITAÇÕES REGISTRADAS COMO CARROSSEL DE PÁGINAS (RF02 + RF04)          -->
+    <!-- ========================================================================= -->
+    <section class="card border-0 shadow-sm solicitacoes-card">
+      <!-- Cabeçalho Fixo do Card de Solicitações -->
+      <div class="card-header bg-white py-2 px-3 d-flex flex-wrap justify-content-between align-items-center gap-2 border-bottom flex-shrink-0">
+        <div>
+          <h6 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
+            <i class="bi bi-collection-play-fill text-primary-loading"></i>
+            <span>Solicitações Registradas</span>
+          </h6>
+          <small class="text-muted extra-small" id="resumoListagem">Carregando demandas...</small>
+        </div>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+          <div class="d-flex align-items-center gap-1">
+            <label for="selectItensPorPagina" class="extra-small text-secondary fw-semibold mb-0 text-nowrap">Por página:</label>
+            <select id="selectItensPorPagina" class="form-select form-select-sm py-0 px-2" style="width: auto; height: 28px; font-size: 0.8rem;">
+              <option value="3">3 itens</option>
+              <option value="4" selected>4 itens</option>
+              <option value="5">5 itens</option>
+            </select>
+          </div>
+          <span class="badge bg-light text-dark border d-none d-lg-inline-block">
+            Fluxo: <strong>Aberta</strong> <i class="bi bi-arrow-right"></i> <strong>Em andamento</strong> <i class="bi bi-arrow-right"></i> <strong>Concluída</strong>
+          </span>
+        </div>
+      </div>
+
+      <!-- Cabeçalho Fixo das Colunas da Lista -->
+      <div class="solicitacoes-grid-header bg-light border-bottom text-secondary extra-small text-uppercase fw-bold px-4 py-2 d-none d-md-grid flex-shrink-0" id="cabecalhoColunasFixo">
+        <div>ID</div>
+        <div>Solicitação</div>
+        <div>Categoria</div>
+        <div>Prioridade</div>
+        <div>Status Atual</div>
+        <div>Próx. Etapa (RF04)</div>
+        <div class="text-end">Ações</div>
+      </div>
+
+      <!-- Corpo: Carrossel onde cada Slide é uma Página da Lista de Solicitações -->
+      <div class="card-body p-0 position-relative solicitacoes-carousel-wrapper">
+        <div id="carrosselSolicitacoes" class="carousel slide h-100" data-bs-ride="false" data-bs-wrap="false">
+          <div class="carousel-inner h-100" id="carrosselPaginasInner">
+            <!-- Slides (Páginas de solicitações) gerados dinamicamente via JavaScript -->
+          </div>
+
+          <!-- Botão Lateral Esquerdo do Carrossel (Página Anterior) -->
+          <button
+            class="carousel-control-prev carrossel-pagina-btn"
+            type="button"
+            id="btnCarrosselPrev"
+            aria-label="Página Anterior"
+            title="Página Anterior"
+          >
+            <span class="carousel-control-icon-wrapper shadow-sm">
+              <i class="bi bi-chevron-left"></i>
+            </span>
+          </button>
+
+          <!-- Botão Lateral Direito do Carrossel (Próxima Página) -->
+          <button
+            class="carousel-control-next carrossel-pagina-btn"
+            type="button"
+            id="btnCarrosselNext"
+            aria-label="Próxima Página"
+            title="Próxima Página"
+          >
+            <span class="carousel-control-icon-wrapper shadow-sm">
+              <i class="bi bi-chevron-right"></i>
+            </span>
+          </button>
+        </div>
+
+        <!-- Estado Vazio -->
+        <div id="estadoVazio" class="text-center py-5 d-none">
+          <div class="mb-2 text-muted">
+            <i class="bi bi-inbox fs-1"></i>
+          </div>
+          <h6 class="fw-semibold text-secondary">Nenhuma solicitação encontrada</h6>
+          <p class="text-muted small mb-3">Tente ajustar os filtros de busca ou cadastre uma nova solicitação.</p>
+          <button class="btn btn-sm btn-primary-loading" id="btnEmptyNova">
+            <i class="bi bi-plus-lg me-1"></i>Registrar Solicitação
+          </button>
+        </div>
+      </div>
+
+      <!-- Rodapé Fixo do Card: Sistema de Paginação Sincronizado com o Carrossel -->
+      <div class="card-footer bg-white py-2 px-3 d-flex flex-wrap justify-content-between align-items-center gap-2 border-top flex-shrink-0" id="rodapePaginacao">
+        <div class="small text-secondary" id="infoPaginacao">
+          Mostrando 0 de 0 solicitações
+        </div>
+        <nav aria-label="Paginação do carrossel de solicitações">
+          <ul class="pagination pagination-sm mb-0" id="paginacaoControles">
+            <!-- Botões de página sincronizados com os slides do carrossel -->
+          </ul>
+        </nav>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- RODAPÉ FIXO DA PÁGINA -->
+  <footer class="bg-white border-top py-2 fixed-bottom shadow-sm">
+    <div class="container d-flex flex-wrap justify-content-between align-items-center extra-small text-muted">
+      <span><strong>LOADING Desenvolvimento Jr.</strong> — Processo Seletivo 2026.2 (Setor de Projetos)</span>
+      <span>Node.js + TypeScript + SQLite + Bootstrap 5</span>
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 1: Cadastrar / Editar Solicitação (RF01 + Edição Opcional + RF06)   -->
+  <!-- ========================================================================= -->
+  <div class="modal fade" id="modalFormulario" tabindex="-1" aria-labelledby="modalFormularioTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header loading-modal-header text-white">
+          <h5 class="modal-title fw-bold" id="modalFormularioTitulo">
+            <i class="bi bi-file-earmark-plus me-2"></i>Nova Solicitação
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <form id="formSolicitacao" novalidate>
+          <div class="modal-body p-4">
+            <input type="hidden" id="solicitacaoId" />
+
+            <!-- Alerta de erro dentro do modal (RF06) -->
+            <div id="alertaErroForm" class="alert alert-danger d-none small py-2 mb-3" role="alert"></div>
+
+            <div class="mb-3">
+              <label for="inputTitulo" class="form-label fw-semibold">Título da Solicitação <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control"
+                id="inputTitulo"
+                placeholder="Ex.: Manutenção no projetor da sala de reuniões"
+                required
+              />
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-7">
+                <label for="inputCategoria" class="form-label fw-semibold">Categoria <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="inputCategoria"
+                  list="sugestoesCategoria"
+                  placeholder="Selecione ou digite..."
+                  required
+                />
+                <datalist id="sugestoesCategoria">
+                  <option value="Infraestrutura / TI"></option>
+                  <option value="Acessos e Permissões"></option>
+                  <option value="Comunicação / Design"></option>
+                  <option value="Financeiro / Compras"></option>
+                  <option value="Recursos Humanos"></option>
+                  <option value="Manutenção Predial"></option>
+                </datalist>
+              </div>
+
+              <div class="col-md-5">
+                <label for="inputPrioridade" class="form-label fw-semibold">Prioridade <span class="text-danger">*</span></label>
+                <select class="form-select" id="inputPrioridade" required>
+                  <option value="">Selecione...</option>
+                  <option value="baixa">Baixa</option>
+                  <option value="média">Média</option>
+                  <option value="alta">Alta</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="inputDescricao" class="form-label fw-semibold">Descrição Detalhada <span class="text-danger">*</span></label>
+              <textarea
+                class="form-control"
+                id="inputDescricao"
+                rows="4"
+                placeholder="Descreva o problema, a necessidade e informações relevantes para o atendimento..."
+                required
+              ></textarea>
+            </div>
+
+            <div id="avisoStatusInicial" class="bg-light border rounded p-2 small text-secondary d-flex align-items-center gap-2">
+              <i class="bi bi-info-circle-fill text-primary-loading"></i>
+              <span>Conforme a regra <strong>RF01</strong>, toda nova solicitação é criada com o status inicial <strong>Aberta</strong>.</span>
+            </div>
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary-loading fw-semibold" id="btnSalvarSolicitacao">
+              <i class="bi bi-check-lg me-1"></i>Salvar Solicitação
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 2: Detalhes, Transição de Status (RF04) e Histórico de Mudanças     -->
+  <!-- ========================================================================= -->
+  <div class="modal fade" id="modalDetalhes" tabindex="-1" aria-labelledby="modalDetalhesTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header loading-modal-header text-white">
+          <h5 class="modal-title fw-bold" id="modalDetalhesTitulo">
+            Detalhes da Solicitação
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body p-4">
+          <!-- Alerta de validação de transição dentro do modal (RF04 / RF06) -->
+          <div id="alertaErroDetalhes" class="alert alert-danger d-none small mb-3" role="alert"></div>
+          <div id="alertaSucessoDetalhes" class="alert alert-success d-none small mb-3" role="alert"></div>
+
+          <!-- Cabeçalho de metadados -->
+          <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3 pb-3 border-bottom">
+            <div>
+              <span class="badge bg-secondary-subtle text-secondary border mb-2" id="detalheCategoria">Categoria</span>
+              <h4 class="fw-bold mb-1 text-dark" id="detalheTitulo">Título</h4>
+              <small class="text-muted" id="detalheDatas">Criado em ...</small>
+            </div>
+            <div class="d-flex flex-column align-items-end gap-2">
+              <div id="detalheStatusBadge"></div>
+              <div id="detalhePrioridadeBadge"></div>
+            </div>
+          </div>
+
+          <!-- Descrição -->
+          <div class="mb-4">
+            <h6 class="text-uppercase small fw-bold text-secondary mb-2">Descrição da Demanda</h6>
+            <div class="p-3 bg-light rounded border text-dark" id="detalheDescricao" style="white-space: pre-wrap;"></div>
+          </div>
+
+          <!-- Controle de Fluxo de Status (RF04: Aberta -> Em andamento -> Concluída) -->
+          <div class="card border-primary-subtle bg-primary-subtle bg-opacity-10 mb-4">
+            <div class="card-body">
+              <h6 class="fw-bold text-dark mb-2 d-flex align-items-center gap-2">
+                <i class="bi bi-diagram-3-fill text-primary-loading"></i>
+                <span>Controle de Fluxo de Status (RF04)</span>
+              </h6>
+              <p class="small text-secondary mb-3">
+                Regra de negócio: <strong>Aberta</strong> → <strong>Em andamento</strong> → <strong>Concluída</strong>. Não é permitido saltar etapas ou retroceder.
+              </p>
+
+              <form id="formTransicaoStatus" class="row g-2 align-items-end">
+                <div class="col-12 col-md-4">
+                  <label for="selectNovoStatus" class="form-label small fw-semibold mb-1">Novo Status Desejado</label>
+                  <select id="selectNovoStatus" class="form-select form-select-sm">
+                    <option value="Aberta">Aberta</option>
+                    <option value="Em andamento">Em andamento</option>
+                    <option value="Concluída">Concluída</option>
+                  </select>
+                </div>
+                <div class="col-12 col-md-5">
+                  <label for="inputObservacaoStatus" class="form-label small fw-semibold mb-1">Observação da Mudança (opcional)</label>
+                  <input
+                    type="text"
+                    id="inputObservacaoStatus"
+                    class="form-control form-control-sm"
+                    placeholder="Ex.: Iniciado atendimento pela equipe..."
+                  />
+                </div>
+                <div class="col-12 col-md-3">
+                  <button type="submit" class="btn btn-sm btn-primary-loading w-100 fw-semibold">
+                    <i class="bi bi-arrow-right-circle me-1"></i>Atualizar Status
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Histórico de Mudanças de Status (Funcionalidade Opcional) -->
+          <div>
+            <h6 class="text-uppercase small fw-bold text-secondary mb-3">
+              <i class="bi bi-clock-history me-1"></i>Histórico de Mudanças de Status
+            </h6>
+            <div id="listaHistorico" class="timeline-historico">
+              <!-- Preenchido via JS -->
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer bg-light d-flex justify-content-between">
+          <button type="button" class="btn btn-outline-primary btn-sm" id="btnEditarNoModal">
+            <i class="bi bi-pencil-square me-1"></i>Editar Dados
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5.3 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Script Principal da Aplicação -->
+  <script src="/js/app.js"></script>
+</body>
+</html>
