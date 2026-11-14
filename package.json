@@ -18,7 +18,7 @@
     "sqlite",
     "bootstrap5"
   ],
-  "author": "",
+  "author": "Kaique Sousa",
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",

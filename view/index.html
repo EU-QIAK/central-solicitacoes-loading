@@ -25,7 +25,7 @@
   <header class="navbar navbar-expand-lg navbar-dark loading-navbar shadow-sm fixed-top">
     <div class="container">
       <a class="navbar-brand d-flex align-items-center gap-2 fw-bold py-0 me-0" href="#">
-        <img src="/assets/logo-loading.png" alt="Logotipo LOADING" class="header-logo-png" />
+        <img src="/assets/logo-loading.png?v=2" alt="Logotipo LOADING" class="header-logo-png" />
         <span class="vr mx-2 opacity-50 d-none d-md-inline-block"></span>
         <span class="fw-semibold fs-6 text-white-50 d-none d-md-inline-block">Central de Solicitações Internas</span>
       </a>
@@ -249,12 +249,21 @@
 
   <!-- RODAPÉ FIXO DA PÁGINA -->
   <footer class="bg-white border-top py-2 fixed-bottom shadow-sm">
-    <div class="container d-flex flex-wrap justify-content-center justify-content-sm-between align-items-center extra-small text-muted">
+    <div class="container d-flex flex-wrap justify-content-between align-items-center extra-small text-muted">
       <span class="d-flex align-items-center gap-2">
         <img src="/assets/favicon.jpg" alt="Loading" style="width: 18px; height: 18px; border-radius: 50%;" />
-        <span><strong>LOADING Desenvolvimento Jr.</strong> — Processo Seletivo 2026.2</span>
+        <span><strong>LOADING Desenvolvimento Jr.</strong> <span class="d-none d-sm-inline">— Processo Seletivo 2026.2</span></span>
       </span>
-      <span class="d-none d-sm-inline">Node.js + TypeScript + SQLite + Bootstrap 5</span>
+      <a
+        href="https://github.com/EU-QIAK/central-solicitacoes-loading"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="footer-dev-link d-inline-flex align-items-center gap-1 fw-semibold"
+        title="Acessar repositório no GitHub"
+      >
+        <i class="bi bi-github"></i>
+        <span>Developed by Kaique Sousa</span>
+      </a>
     </div>
   </footer>
 

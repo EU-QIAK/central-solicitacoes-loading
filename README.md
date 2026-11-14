@@ -85,7 +85,7 @@ central-solicitacoes-loading/
 
 1. **Clone o repositório e acesse a pasta do projeto:**
    ```bash
-   git clone <URL_DO_REPOSITORIO>
+   git clone https://github.com/EU-QIAK/central-solicitacoes-loading.git
    cd central-solicitacoes-loading
    ```
 
