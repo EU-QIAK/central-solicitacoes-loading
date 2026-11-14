@@ -460,7 +460,8 @@ function abrirModalEdicao(solicitacao) {
   document.getElementById('inputTitulo').value = solicitacao.titulo;
   document.getElementById('inputCategoria').value = solicitacao.categoria;
   document.getElementById('inputPrioridade').value = solicitacao.prioridade;
-  document.getElementById('inputDescricao').value = solicitacao.descricao;
+  document.getElementById('inputDescricao').value =
+    solicitacao.descricao === 'sem descrições detalhadas' ? '' : solicitacao.descricao;
 
   document.getElementById('modalFormularioTitulo').innerHTML =
     `<i class="bi bi-pencil-square me-2"></i>Editar Solicitação #${solicitacao.id}`;
@@ -477,11 +478,13 @@ async function salvarSolicitacao(evento) {
   ocultarAlertaForm();
 
   const id = document.getElementById('solicitacaoId').value;
+  const descricaoDigitada = document.getElementById('inputDescricao').value.trim();
+
   const payload = {
     titulo: document.getElementById('inputTitulo').value,
     categoria: document.getElementById('inputCategoria').value,
     prioridade: document.getElementById('inputPrioridade').value,
-    descricao: document.getElementById('inputDescricao').value,
+    descricao: descricaoDigitada || 'sem descrições detalhadas',
   };
 
   const metodo = id ? 'PUT' : 'POST';

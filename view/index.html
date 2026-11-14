@@ -160,9 +160,9 @@
           <small class="text-muted extra-small" id="resumoListagem">Carregando demandas...</small>
         </div>
         <div class="d-flex flex-wrap align-items-center gap-2">
-          <div class="d-flex align-items-center gap-1">
+          <div class="d-flex align-items-center gap-2">
             <label for="selectItensPorPagina" class="extra-small text-secondary fw-semibold mb-0 text-nowrap">Por página:</label>
-            <select id="selectItensPorPagina" class="form-select form-select-sm py-0 px-2" style="width: auto; height: 28px; font-size: 0.8rem;">
+            <select id="selectItensPorPagina" class="form-select form-select-sm" style="width: auto; min-width: 92px; padding-right: 2rem; font-size: 0.8rem;">
               <option value="3">3 itens</option>
               <option value="4" selected>4 itens</option>
               <option value="5">5 itens</option>
@@ -291,22 +291,16 @@
             <div class="row g-3 mb-3">
               <div class="col-md-7">
                 <label for="inputCategoria" class="form-label fw-semibold">Categoria <span class="text-danger">*</span></label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="inputCategoria"
-                  list="sugestoesCategoria"
-                  placeholder="Selecione ou digite..."
-                  required
-                />
-                <datalist id="sugestoesCategoria">
-                  <option value="Infraestrutura / TI"></option>
-                  <option value="Acessos e Permissões"></option>
-                  <option value="Comunicação / Design"></option>
-                  <option value="Financeiro / Compras"></option>
-                  <option value="Recursos Humanos"></option>
-                  <option value="Manutenção Predial"></option>
-                </datalist>
+                <select class="form-select" id="inputCategoria" required>
+                  <option value="">Selecione...</option>
+                  <option value="Infraestrutura / TI">Infraestrutura / TI</option>
+                  <option value="Acessos e Permissões">Acessos e Permissões</option>
+                  <option value="Comunicação / Design">Comunicação / Design</option>
+                  <option value="Financeiro / Compras">Financeiro / Compras</option>
+                  <option value="Recursos Humanos">Recursos Humanos</option>
+                  <option value="Manutenção Predial">Manutenção Predial</option>
+                  <option value="Outros">Outros</option>
+                </select>
               </div>
 
               <div class="col-md-5">
@@ -321,13 +315,14 @@
             </div>
 
             <div class="mb-3">
-              <label for="inputDescricao" class="form-label fw-semibold">Descrição Detalhada <span class="text-danger">*</span></label>
+              <label for="inputDescricao" class="form-label fw-semibold">
+                Descrição Detalhada <span class="text-muted fw-normal small">(opcional)</span>
+              </label>
               <textarea
                 class="form-control"
                 id="inputDescricao"
                 rows="4"
-                placeholder="Descreva o problema, a necessidade e informações relevantes para o atendimento..."
-                required
+                placeholder="Caso não preenchida, será registrado como &quot;sem descrições detalhadas&quot;..."
               ></textarea>
             </div>
 

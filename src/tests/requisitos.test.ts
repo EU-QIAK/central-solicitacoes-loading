@@ -28,12 +28,12 @@ function executarTestes() {
   console.log('🧪 Iniciando validação automatizada dos Requisitos (RF01 a RF06)...\n');
   initializeDatabase();
 
-  // 1. RF01 — Cadastro válido com status inicial 'Aberta'
+  // 1. RF01 — Cadastro válido com status inicial 'Aberta' e descrição opcional padrão
   const reqCriar = {
     body: {
       titulo: 'Teste Automatizado RF01',
-      descricao: 'Verificando criação com status inicial Aberta',
-      categoria: 'Testes / QA',
+      descricao: '',
+      categoria: 'Infraestrutura / TI',
       prioridade: 'alta',
     },
   } as unknown as Request;
@@ -42,8 +42,13 @@ function executarTestes() {
 
   assert.strictEqual(resCriar.getStatus(), 201, 'RF01: Status HTTP deve ser 201 Created');
   assert.strictEqual(resCriar.getJson().dados.status, 'Aberta', 'RF01: Status inicial deve ser Aberta');
+  assert.strictEqual(
+    resCriar.getJson().dados.descricao,
+    'sem descrições detalhadas',
+    'Descrição vazia deve preencher "sem descrições detalhadas"'
+  );
   const idCriado: number = resCriar.getJson().dados.id;
-  console.log(`✅ [RF01] Cadastro de solicitação #${idCriado} criado com status inicial "Aberta".`);
+  console.log(`✅ [RF01] Cadastro de solicitação #${idCriado} criado com status inicial "Aberta" e descrição padrão.`);
 
   // 2. RF06 — Rejeição de campos obrigatórios vazios
   const reqInvalido = {

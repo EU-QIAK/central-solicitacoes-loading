@@ -2,49 +2,52 @@
 
 Projeto prático Full Stack desenvolvido para o **Processo Seletivo 2026.2 (Setor de Projetos)** da **Loading Desenvolvimento Jr.**
 
-A aplicação consiste em um sistema web completo (Interface Web + API REST + Persistência em Banco de Dados SQLite) para registrar solicitações internas de uma organização, filtrar demandas por prioridade/status/texto e controlar seu ciclo de resolução com validação estrita de regras de negócio.
+A aplicação consiste em um sistema web completo (Interface Web + API REST + Persistência em Banco de Dados SQLite) para registrar solicitações internas de uma organização, filtrar demandas por prioridade, status e texto, e controlar seu ciclo de resolução com validação estrita de regras de negócio.
 
 ---
 
-## 🛠️ Tecnologias e Dependências Utilizadas
+## Tecnologias e Dependências Utilizadas
 
-### Backend (API & Persistência)
+### Backend (API e Persistência)
 - **Node.js (v22+)**: Ambiente de execução JavaScript no servidor.
 - **TypeScript (`typescript`, `tsx`)**: Tipagem estática para maior segurança, legibilidade e facilidade de manutenção do código.
-- **Express (`express`, `cors`)**: Framework web minimalista para construção das rotas da API REST e entrega dos arquivos estáticos da interface.
-- **SQLite (`node:sqlite`)**: Banco de dados relacional embutido em arquivo local (`database/solicitacoes.sqlite`), garantindo persistência real em disco após reiniciar a aplicação sem depender de servidores externos ou configurações complexas.
+- **Express (`express`, `cors`)**: Framework web para construção das rotas da API REST e entrega dos arquivos estáticos da interface.
+- **SQLite (`node:sqlite`)**: Banco de dados relacional embutido em arquivo local (`database/solicitacoes.sqlite`), garantindo persistência real em disco após reiniciar a aplicação sem depender de servidores externos ou configurações adicionais.
 
 ### Frontend (Interface Web)
-- **HTML5 Semântico + CSS3**: Estruturação limpa e estilização inspirada na identidade visual da Loading.
-- **Bootstrap 5.3 + Bootstrap Icons**: Componentes responsivos (modais, tabelas, badges, formulários e alertas).
-- **JavaScript (ES6+ / Fetch API)**: Consumo assíncrono da API REST, manipulação dinâmica do DOM e exibição clara de mensagens de validação.
+- **HTML5 Semântico e CSS3**: Estruturação limpa, layout responsivo com cabeçalho e rodapé fixos e estilização alinhada à identidade visual da Loading.
+- **Bootstrap 5.3 e Bootstrap Icons**: Componentes responsivos (carrossel de páginas, paginação, modais, badges, formulários e alertas).
+- **JavaScript (ES6+ / Fetch API)**: Consumo assíncrono da API REST, manipulação dinâmica do DOM e exibição de mensagens de validação.
 
 ---
 
-## 🏛️ Arquitetura e Organização do Projeto
+## Arquitetura e Organização do Projeto
 
-O projeto adota uma estrutura inspirada no padrão **MVC (Model-View-Controller)**, separando claramente as responsabilidades entre interface, controle de rotas/regras de negócio e persistência de dados:
+O projeto adota uma estrutura baseada no padrão **MVC (Model-View-Controller)**, separando as responsabilidades entre interface, controle de rotas/regras de negócio e persistência de dados:
 
 ```text
 central-solicitacoes-loading/
 ├── database/
-│   └── solicitacoes.sqlite       # Arquivo do banco SQLite (gerado automaticamente)
+│   └── solicitacoes.sqlite          # Arquivo do banco SQLite (gerado automaticamente)
 ├── src/
 │   ├── database/
-│   │   └── connection.ts         # Conexão SQLite, criação das tabelas (DDL) e seed inicial
+│   │   └── connection.ts            # Conexão SQLite, criação das tabelas (DDL) e dados iniciais
 │   ├── models/
-│   │   └── SolicitacaoModel.ts   # Interfaces TypeScript e consultas SQL parametrizadas
+│   │   └── SolicitacaoModel.ts      # Interfaces TypeScript e consultas SQL parametrizadas
 │   ├── controllers/
 │   │   └── SolicitacaoController.ts # Validações de entrada e regra de transição de status (RF04/RF06)
 │   ├── routes/
-│   │   └── solicitacaoRoutes.ts  # Definição dos endpoints REST (/api/solicitacoes)
-│   └── server.ts                 # Inicialização do servidor Express e middlewares
+│   │   └── solicitacaoRoutes.ts     # Definição dos endpoints REST (/api/solicitacoes)
+│   ├── tests/
+│   │   └── requisitos.test.ts       # Testes automatizados dos requisitos RF01 a RF06
+│   └── server.ts                    # Inicialização do servidor Express e middlewares
 ├── view/
-│   ├── index.html                # Interface principal (Dashboard, Filtros, Tabela e Modais)
+│   ├── assets/                      # Logotipo e favicon da Loading
 │   ├── css/
-│   │   └── style.css             # Estilização complementar ao Bootstrap 5
-│   └── js/
-│       └── app.js                # Integração Fetch API, eventos e renderização dinâmica
+│   │   └── style.css                # Estilização responsiva complementar ao Bootstrap 5
+│   ├── js/
+│   │   └── app.js                   # Integração Fetch API, carrossel paginado e eventos
+│   └── index.html                   # Interface principal da aplicação
 ├── package.json
 ├── tsconfig.json
 └── README.md
@@ -52,28 +55,30 @@ central-solicitacoes-loading/
 
 ---
 
-## ✅ Funcionalidades Implementadas
+## Funcionalidades Implementadas
 
 ### Requisitos Obrigatórios
-- **RF01 — Cadastro**: Registro de solicitação com `título`, `descrição`, `categoria` e `prioridade` (`baixa`, `média` ou `alta`). O status inicial é definido obrigatoriamente pelo backend como `Aberta`.
+- **RF01 — Cadastro**: Registro de solicitação com `título`, `categoria`, `prioridade` (`baixa`, `média` ou `alta`) e `descrição` (opcional, assumindo o valor padrão `"sem descrições detalhadas"` quando não informada). O status inicial é definido obrigatoriamente pelo backend como `Aberta`.
 - **RF02 — Consulta**: Listagem geral das solicitações e visualização detalhada de cada demanda em modal dedicado.
 - **RF03 — Filtros**: Filtragem combinada na API e na interface por **status** (`Aberta`, `Em andamento`, `Concluída`) e por **prioridade** (`baixa`, `média`, `alta`).
 - **RF04 — Regra de Negócio (Fluxo de Status)**: Controle estrito da máquina de estados `Aberta` → `Em andamento` → `Concluída`. A API bloqueia tentativas de saltar etapas (ex.: `Aberta` → `Concluída`) ou retroceder status.
 - **RF05 — Persistência**: Armazenamento persistente em arquivo SQLite (`database/solicitacoes.sqlite`), mantendo todos os dados após reiniciar o servidor.
-- **RF06 — Integração e Validação**: Integração completa via `fetch` entre frontend e API, rejeitando campos obrigatórios vazios ou transições inválidas com códigos HTTP adequados (`400 Bad Request`, `404 Not Found`) e mensagens claras para o usuário.
+- **RF06 — Integração e Validação**: Integração via `fetch` entre frontend e API, rejeitando campos obrigatórios vazios ou transições inválidas com códigos HTTP adequados (`400 Bad Request`, `404 Not Found`) e mensagens compreensíveis ao usuário.
 
 ### Funcionalidades Opcionais Implementadas
 - **Busca Textual**: Pesquisa em tempo real por termos presentes no `título`, `descrição` ou `categoria`.
-- **Histórico de Mudanças de Status**: Tabela relacional (`historico_status`) vinculada por chave estrangeira (`ON DELETE CASCADE`) que registra cada mudança de status com data/hora, status anterior, novo status e observação opcional, exibida em formato de linha do tempo (*timeline*).
+- **Carrossel de Páginas e Paginação**: Listagem estruturada em slides de páginas sincronizados com controles de paginação e seletor de quantidade de itens por página.
+- **Histórico de Mudanças de Status**: Tabela relacional (`historico_status`) vinculada por chave estrangeira (`ON DELETE CASCADE`) que registra cada mudança de status com data/hora, status anterior, novo status e observação opcional, exibida em formato de linha do tempo.
 - **Edição e Exclusão**: Possibilidade de atualizar os dados cadastrais (`PUT /api/solicitacoes/:id`) ou remover uma solicitação (`DELETE /api/solicitacoes/:id`).
-- **Cards de Resumo Interativos (KPIs)**: Contadores dinâmicos no topo da página (Total, Abertas, Em Andamento e Concluídas) que também funcionam como atalhos de filtro.
+- **Cards de Resumo Interativos (KPIs)**: Contadores dinâmicos no topo da página (Total, Abertas, Em Andamento e Concluídas) que funcionam como atalhos de filtro.
+- **Testes Automatizados**: Suite de verificação automatizada dos requisitos funcionais (`npm test`).
 
 ---
 
-## 🚀 Instruções para Instalação e Execução Local
+## Instruções para Instalação e Execução Local
 
 ### Pré-requisitos
-- **Node.js** versão **22.5.0 ou superior** (recomendado: Node.js v22 LTS, que já inclui o módulo nativo `node:sqlite`).
+- **Node.js** versão **22.5.0 ou superior** (recomendado: Node.js v22 LTS, que inclui o módulo nativo `node:sqlite`).
 - **Git** instalado.
 
 ### Passo a passo
@@ -111,14 +116,14 @@ central-solicitacoes-loading/
 
 ---
 
-## 🔌 Documentação da API REST
+## Documentação da API REST
 
 | Método | Rota | Descrição |
 | :--- | :--- | :--- |
 | `GET` | `/api/solicitacoes` | Lista solicitações. Aceita query params opcionais: `?status=`, `?prioridade=` e `?busca=`. |
 | `GET` | `/api/solicitacoes/:id` | Retorna os dados completos de uma solicitação e seu array `historico` de mudanças de status. |
-| `POST` | `/api/solicitacoes` | Cria uma nova solicitação (`titulo`, `descricao`, `categoria`, `prioridade`). Status inicial sempre `Aberta`. |
-| `PUT` | `/api/solicitacoes/:id` | Atualiza os dados cadastrais (`titulo`, `descricao`, `categoria`, `prioridade`) de uma solicitação. |
+| `POST` | `/api/solicitacoes` | Cria uma nova solicitação (`titulo`, `categoria`, `prioridade`, `descricao`). Status inicial sempre `Aberta`. |
+| `PUT` | `/api/solicitacoes/:id` | Atualiza os dados cadastrais (`titulo`, `categoria`, `prioridade`, `descricao`) de uma solicitação. |
 | `PATCH` | `/api/solicitacoes/:id/status` | Altera o status respeitando a regra `Aberta` → `Em andamento` → `Concluída`. Aceita `{ status, observacao }`. |
 | `DELETE` | `/api/solicitacoes/:id` | Exclui uma solicitação e seu respectivo histórico. |
 
@@ -134,8 +139,8 @@ central-solicitacoes-loading/
 
 ---
 
-## 🤖 Declaração sobre Uso de Inteligência Artificial
+## Declaração sobre Uso de Inteligência Artificial
 
 Em conformidade com as orientações do edital do Processo Seletivo:
-- Ferramentas de Inteligência Artificial (assistente de código) foram utilizadas como **apoio ao desenvolvimento** para estruturação inicial do boilerplate Express/TypeScript, organização da estilização com Bootstrap 5 e revisão da documentação.
-- Todas as regras de negócio (como a máquina de estados do fluxo RF04, validações RF06 e modelagem relacional SQLite RF05) foram revisadas, compreendidas e testadas manualmente na aplicação.
+- Ferramentas de Inteligência Artificial foram utilizadas como apoio ao desenvolvimento para estruturação inicial do projeto Express/TypeScript, organização da estilização responsiva com Bootstrap 5 e revisão da documentação.
+- Todas as regras de negócio (como a máquina de estados do fluxo RF04, validações RF06 e modelagem relacional SQLite RF05) foram revisadas, compreendidas e validadas na aplicação.

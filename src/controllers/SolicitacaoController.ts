@@ -135,10 +135,6 @@ export class SolicitacaoController {
         erros.push('O campo "título" deve ter pelo menos 3 caracteres.');
       }
 
-      if (typeof descricao !== 'string' || descricao.trim().length === 0) {
-        erros.push('O campo "descrição" é obrigatório e não pode estar vazio.');
-      }
-
       if (typeof categoria !== 'string' || categoria.trim().length === 0) {
         erros.push('O campo "categoria" é obrigatório e não pode estar vazio.');
       }
@@ -157,9 +153,14 @@ export class SolicitacaoController {
         return;
       }
 
+      const descricaoFinal =
+        typeof descricao === 'string' && descricao.trim().length > 0
+          ? descricao.trim()
+          : 'sem descrições detalhadas';
+
       const novaSolicitacao = SolicitacaoModel.criar({
         titulo: titulo.trim(),
-        descricao: descricao.trim(),
+        descricao: descricaoFinal,
         categoria: categoria.trim(),
         prioridade: prioridadeValida!,
       });
@@ -211,10 +212,6 @@ export class SolicitacaoController {
         erros.push('O campo "título" deve ter pelo menos 3 caracteres.');
       }
 
-      if (typeof descricao !== 'string' || descricao.trim().length === 0) {
-        erros.push('O campo "descrição" é obrigatório e não pode estar vazio.');
-      }
-
       if (typeof categoria !== 'string' || categoria.trim().length === 0) {
         erros.push('O campo "categoria" é obrigatório e não pode estar vazio.');
       }
@@ -233,9 +230,14 @@ export class SolicitacaoController {
         return;
       }
 
+      const descricaoFinal =
+        typeof descricao === 'string' && descricao.trim().length > 0
+          ? descricao.trim()
+          : 'sem descrições detalhadas';
+
       const atualizada = SolicitacaoModel.atualizarDados(id, {
         titulo: titulo.trim(),
-        descricao: descricao.trim(),
+        descricao: descricaoFinal,
         categoria: categoria.trim(),
         prioridade: prioridadeValida!,
       });
