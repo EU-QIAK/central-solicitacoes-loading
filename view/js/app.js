@@ -191,14 +191,14 @@ function construirCarrosselDePaginas() {
 
   if (totalItens === 0) {
     carrosselEl.classList.add('d-none');
-    cabecalhoColunas.classList.remove('d-md-grid');
+    cabecalhoColunas.classList.remove('d-lg-grid');
     estadoVazio.classList.remove('d-none');
     atualizarRodapePaginacao();
     return;
   }
 
   carrosselEl.classList.remove('d-none');
-  cabecalhoColunas.classList.add('d-md-grid');
+  cabecalhoColunas.classList.add('d-lg-grid');
   estadoVazio.classList.add('d-none');
 
   // Cria cada página como um slide (.carousel-item) do Carrossel
@@ -257,8 +257,8 @@ function criarLinhaSolicitacaoHtml(item) {
 
   return `
     <div class="solicitacao-grid-row">
-      <div class="fw-bold text-secondary small">#${item.id}</div>
-      <div>
+      <div class="col-id fw-bold text-secondary small">#${item.id}</div>
+      <div class="col-info">
         <a class="titulo-solicitacao btn-detalhes" data-id="${item.id}">
           ${escaparHtml(item.titulo)}
         </a>
@@ -267,15 +267,15 @@ function criarLinhaSolicitacaoHtml(item) {
           <i class="bi bi-calendar3 me-1"></i>${formatarDataHora(item.criado_em)}
         </small>
       </div>
-      <div>
-        <span class="badge bg-secondary bg-opacity-10 text-dark border fw-medium text-truncate" style="max-width: 155px;">
+      <div class="col-categoria">
+        <span class="badge bg-secondary bg-opacity-10 text-dark border fw-medium text-truncate categoria-badge">
           ${escaparHtml(item.categoria)}
         </span>
       </div>
-      <div>${gerarBadgePrioridade(item.prioridade)}</div>
-      <div>${gerarBadgeStatus(item.status)}</div>
-      <div>${botaoFluxoHtml}</div>
-      <div class="text-end">
+      <div class="col-prioridade">${gerarBadgePrioridade(item.prioridade)}</div>
+      <div class="col-status">${gerarBadgeStatus(item.status)}</div>
+      <div class="col-fluxo">${botaoFluxoHtml}</div>
+      <div class="col-acoes text-lg-end">
         <div class="btn-group btn-group-sm" role="group">
           <button type="button" class="btn btn-outline-secondary btn-detalhes" data-id="${item.id}" title="Consultar detalhes e histórico">
             <i class="bi bi-eye"></i>

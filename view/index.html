@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Central de Solicitações | LOADING</title>
+  <!-- Favicon LOADING -->
+  <link rel="icon" type="image/jpeg" href="/assets/favicon.jpg" />
+  <link rel="shortcut icon" type="image/jpeg" href="/assets/favicon.jpg" />
+  <link rel="apple-touch-icon" href="/assets/favicon.jpg" />
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -20,13 +24,13 @@
   <!-- CABEÇALHO FIXO DA PÁGINA -->
   <header class="navbar navbar-expand-lg navbar-dark loading-navbar shadow-sm fixed-top">
     <div class="container">
-      <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="#">
-        <span class="brand-badge">LOADING</span>
-        <span class="vr mx-2 opacity-50"></span>
-        <span class="fw-semibold fs-6 text-white-50">Central de Solicitações Internas</span>
+      <a class="navbar-brand d-flex align-items-center gap-2 fw-bold py-0 me-0" href="#">
+        <img src="/assets/logo-loading.png" alt="Logotipo LOADING" class="header-logo-png" />
+        <span class="vr mx-2 opacity-50 d-none d-md-inline-block"></span>
+        <span class="fw-semibold fs-6 text-white-50 d-none d-md-inline-block">Central de Solicitações Internas</span>
       </a>
       <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-light btn-sm fw-semibold d-flex align-items-center gap-2 shadow-sm px-3 py-2" id="btnNovaSolicitacao">
+        <button class="btn btn-light btn-sm fw-semibold d-flex align-items-center gap-2 shadow-sm px-2 px-sm-3 py-2" id="btnNovaSolicitacao">
           <i class="bi bi-plus-circle-fill text-primary-loading"></i>
           <span>Nova Solicitação</span>
         </button>
@@ -170,8 +174,8 @@
         </div>
       </div>
 
-      <!-- Cabeçalho Fixo das Colunas da Lista -->
-      <div class="solicitacoes-grid-header bg-light border-bottom text-secondary extra-small text-uppercase fw-bold px-4 py-2 d-none d-md-grid flex-shrink-0" id="cabecalhoColunasFixo">
+      <!-- Cabeçalho Fixo das Colunas da Lista (visível em telas grandes >= 992px) -->
+      <div class="solicitacoes-grid-header bg-light border-bottom text-secondary extra-small text-uppercase fw-bold px-4 py-2 d-none d-lg-grid flex-shrink-0" id="cabecalhoColunasFixo">
         <div>ID</div>
         <div>Solicitação</div>
         <div>Categoria</div>
@@ -229,12 +233,12 @@
       </div>
 
       <!-- Rodapé Fixo do Card: Sistema de Paginação Sincronizado com o Carrossel -->
-      <div class="card-footer bg-white py-2 px-3 d-flex flex-wrap justify-content-between align-items-center gap-2 border-top flex-shrink-0" id="rodapePaginacao">
-        <div class="small text-secondary" id="infoPaginacao">
+      <div class="card-footer bg-white py-2 px-3 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 border-top flex-shrink-0" id="rodapePaginacao">
+        <div class="small text-secondary text-center text-sm-start" id="infoPaginacao">
           Mostrando 0 de 0 solicitações
         </div>
         <nav aria-label="Paginação do carrossel de solicitações">
-          <ul class="pagination pagination-sm mb-0" id="paginacaoControles">
+          <ul class="pagination pagination-sm mb-0 flex-wrap justify-content-center" id="paginacaoControles">
             <!-- Botões de página sincronizados com os slides do carrossel -->
           </ul>
         </nav>
@@ -245,9 +249,12 @@
 
   <!-- RODAPÉ FIXO DA PÁGINA -->
   <footer class="bg-white border-top py-2 fixed-bottom shadow-sm">
-    <div class="container d-flex flex-wrap justify-content-between align-items-center extra-small text-muted">
-      <span><strong>LOADING Desenvolvimento Jr.</strong> — Processo Seletivo 2026.2 (Setor de Projetos)</span>
-      <span>Node.js + TypeScript + SQLite + Bootstrap 5</span>
+    <div class="container d-flex flex-wrap justify-content-center justify-content-sm-between align-items-center extra-small text-muted">
+      <span class="d-flex align-items-center gap-2">
+        <img src="/assets/favicon.jpg" alt="Loading" style="width: 18px; height: 18px; border-radius: 50%;" />
+        <span><strong>LOADING Desenvolvimento Jr.</strong> — Processo Seletivo 2026.2</span>
+      </span>
+      <span class="d-none d-sm-inline">Node.js + TypeScript + SQLite + Bootstrap 5</span>
     </div>
   </footer>
 
