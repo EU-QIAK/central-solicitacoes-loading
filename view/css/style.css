@@ -84,6 +84,16 @@ footer.fixed-bottom {
   color: #ffffff;
 }
 
+#btnLimparFiltros {
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+#btnLimparFiltros:hover {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: #ffffff;
+}
+
 /* Cards de Resumo (KPIs) */
 .kpi-card {
   cursor: pointer;
