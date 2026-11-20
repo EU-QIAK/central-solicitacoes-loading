@@ -10,6 +10,7 @@ const API_URL = '/api/solicitacoes';
 let solicitacaoDetalheAtual = null;
 let modalFormularioInstancia = null;
 let modalDetalhesInstancia = null;
+let modalEstatisticasInstancia = null;
 let carrosselInstancia = null;
 let debounceTimer = null;
 
@@ -21,8 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Inicializa instâncias dos modais do Bootstrap 5
   const modalFormEl = document.getElementById('modalFormulario');
   const modalDetEl = document.getElementById('modalDetalhes');
+  const modalEstEl = document.getElementById('modalEstatisticas');
   modalFormularioInstancia = new bootstrap.Modal(modalFormEl);
   modalDetalhesInstancia = new bootstrap.Modal(modalDetEl);
+  modalEstatisticasInstancia = new bootstrap.Modal(modalEstEl);
 
   // Inicializa instância do Carrossel de Páginas de Solicitações
   const carrosselEl = document.getElementById('carrosselSolicitacoes');
@@ -42,6 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
  * Configura todos os ouvintes de eventos da interface
  */
 function configurarEventos() {
+  // Botão para abrir modal de Gráfico de Rosca e Estimativas
+  document.getElementById('btnEstatisticas').addEventListener('click', abrirModalEstatisticas);
+
   // Botões para abrir modal de Nova Solicitação
   document.getElementById('btnNovaSolicitacao').addEventListener('click', abrirModalCriacao);
   document.getElementById('btnEmptyNova').addEventListener('click', abrirModalCriacao);
@@ -815,4 +821,231 @@ function escaparHtml(texto) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+/**
+ * Busca todas as solicitações e abre o modal com Gráficos de Rosca e Estimativas Operacionais
+ */
+async function abrirModalEstatisticas() {
+  try {
+    const resposta = await fetch(API_URL);
+    const json = await resposta.json();
+    if (!resposta.ok || !json.dados) {
+      exibirFeedbackGlobal('Não foi possível carregar os dados para as estatísticas.', 'danger');
+      return;
+    }
+
+    const todas = json.dados;
+    const total = todas.length;
+
+    const abertas = todas.filter((s) => s.status === 'Aberta').length;
+    const andamento = todas.filter((s) => s.status === 'Em andamento').length;
+    const concluidas = todas.filter((s) => s.status === 'Concluída').length;
+
+    const alta = todas.filter((s) => s.prioridade === 'alta').length;
+    const media = todas.filter((s) => s.prioridade === 'média').length;
+    const baixa = todas.filter((s) => s.prioridade === 'baixa').length;
+
+    const taxaConclusaoPct = total > 0 ? Math.round((concluidas / total) * 100) : 0;
+
+    // 1. Renderiza Gráfico de Rosca por Status
+    renderizarGraficoRosca(
+      'graficoRoscaStatus',
+      'legendaRoscaStatus',
+      [
+        { rotulo: 'Aberta', valor: abertas, cor: '#0d6efd' },
+        { rotulo: 'Em andamento', valor: andamento, cor: '#f59e0b' },
+        { rotulo: 'Concluída', valor: concluidas, cor: '#198754' },
+      ],
+      total,
+      `${taxaConclusaoPct}%`,
+      'Concluídas'
+    );
+
+    // 2. Renderiza Gráfico de Rosca por Prioridade
+    renderizarGraficoRosca(
+      'graficoRoscaPrioridade',
+      'legendaRoscaPrioridade',
+      [
+        { rotulo: 'Prioridade Alta', valor: alta, cor: '#dc3545' },
+        { rotulo: 'Prioridade Média', valor: media, cor: '#f59e0b' },
+        { rotulo: 'Prioridade Baixa', valor: baixa, cor: '#0dcaf0' },
+      ],
+      total,
+      String(total),
+      'Demandas'
+    );
+
+    // 3. Calcula e preenche as Estimativas Operacionais
+    preencherEstimativasOperacionais(todas, total, abertas, andamento, concluidas);
+
+    modalEstatisticasInstancia.show();
+  } catch (erro) {
+    console.error('Erro ao gerar estatísticas:', erro);
+    exibirFeedbackGlobal('Erro ao processar gráficos e estimativas.', 'danger');
+  }
+}
+
+/**
+ * Gera um Gráfico de Rosca (Doughnut Chart) em SVG puro com legenda detalhada
+ */
+function renderizarGraficoRosca(
+  containerId,
+  legendaId,
+  fatias,
+  total,
+  textoCentroPrincipal,
+  textoCentroSecundario
+) {
+  const container = document.getElementById(containerId);
+  const legenda = document.getElementById(legendaId);
+
+  if (total === 0) {
+    container.innerHTML = `
+      <svg viewBox="0 0 42 42" class="doughnut-svg">
+        <circle cx="21" cy="21" r="15.9155" fill="none" stroke="#e2e8f0" stroke-width="6.5"></circle>
+      </svg>
+      <div class="doughnut-center-label">
+        <span class="fw-bold fs-5 text-secondary">0</span>
+        <span class="extra-small text-muted">Sem dados</span>
+      </div>
+    `;
+    legenda.innerHTML = '<div class="text-center text-muted small">Nenhuma solicitação cadastrada.</div>';
+    return;
+  }
+
+  let acumuladoPct = 0;
+  const circulosSvg = fatias
+    .filter((f) => f.valor > 0)
+    .map((f) => {
+      const pctExato = (f.valor / total) * 100;
+      const dashArray = `${pctExato} ${100 - pctExato}`;
+      const dashOffset = -acumuladoPct;
+      acumuladoPct += pctExato;
+
+      return `
+        <circle
+          class="doughnut-segment"
+          cx="21"
+          cy="21"
+          r="15.9155"
+          stroke="${f.cor}"
+          stroke-dasharray="${dashArray}"
+          stroke-dashoffset="${dashOffset}"
+        >
+          <title>${escaparHtml(f.rotulo)}: ${f.valor} (${Math.round(pctExato)}%)</title>
+        </circle>
+      `;
+    })
+    .join('');
+
+  container.innerHTML = `
+    <svg viewBox="0 0 42 42" class="doughnut-svg">
+      <circle cx="21" cy="21" r="15.9155" fill="none" stroke="#f1f5f9" stroke-width="6.5"></circle>
+      ${circulosSvg}
+    </svg>
+    <div class="doughnut-center-label">
+      <span class="fw-bold fs-5 text-dark lh-1">${escaparHtml(textoCentroPrincipal)}</span>
+      <span class="extra-small text-muted mt-1">${escaparHtml(textoCentroSecundario)}</span>
+    </div>
+  `;
+
+  legenda.innerHTML = fatias
+    .map((f) => {
+      const pct = total > 0 ? Math.round((f.valor / total) * 100) : 0;
+      return `
+        <div class="d-flex justify-content-between align-items-center py-1 border-bottom">
+          <span class="d-flex align-items-center gap-2">
+            <span class="doughnut-legend-dot" style="background-color: ${f.cor};"></span>
+            <span class="text-secondary">${escaparHtml(f.rotulo)}</span>
+          </span>
+          <span class="fw-semibold text-dark">${f.valor} <span class="text-muted fw-normal">(${pct}%)</span></span>
+        </div>
+      `;
+    })
+    .join('');
+}
+
+/**
+ * Calcula estimativas de tempo de fila, tempo médio de resolução, progresso e categoria líder
+ */
+function preencherEstimativasOperacionais(todas, total, abertas, andamento, concluidas) {
+  // 1. Estimativa de Esforço para Zerar a Fila (SLA estimado por prioridade: Alta=4h, Média=2h, Baixa=1h)
+  // Solicitações já "Em andamento" contabilizam 50% do tempo restante
+  const pesosHoras = { alta: 4, 'média': 2, baixa: 1 };
+  let horasEstimadas = 0;
+
+  todas.forEach((s) => {
+    if (s.status === 'Concluída') return;
+    const pesoBase = pesosHoras[s.prioridade] || 2;
+    const fatorEtapa = s.status === 'Em andamento' ? 0.5 : 1;
+    horasEstimadas += pesoBase * fatorEtapa;
+  });
+
+  const pendentes = abertas + andamento;
+  document.getElementById('estTempoFila').textContent =
+    horasEstimadas === 0 ? 'Fila zerada (0h)' : `~${horasEstimadas.toFixed(1).replace('.0', '')}h de trabalho`;
+  document.getElementById('estTempoFilaDetalhe').textContent =
+    pendentes === 0
+      ? 'Todas as solicitações registradas já foram concluídas.'
+      : `Estimativa para concluir ${pendentes} ${pendentes === 1 ? 'demanda pendente' : 'demandas pendentes'} (${abertas} abertas, ${andamento} em andamento).`;
+
+  // 2. Tempo Médio de Resolução (baseado nas solicitações concluídas)
+  const itensConcluidos = todas.filter((s) => s.status === 'Concluída');
+  if (itensConcluidos.length === 0) {
+    document.getElementById('estTempoMedio').textContent = 'Sem histórico concluído';
+    document.getElementById('estTempoMedioDetalhe').textContent =
+      'Conclua ao menos uma solicitação para calcular o tempo médio real.';
+  } else {
+    let somaMinutos = 0;
+    itensConcluidos.forEach((s) => {
+      const inicio = new Date(s.criado_em).getTime();
+      const fim = new Date(s.atualizado_em).getTime();
+      const diffMin = Math.max(1, Math.round((fim - inicio) / 60000));
+      somaMinutos += diffMin;
+    });
+    const mediaMin = Math.round(somaMinutos / itensConcluidos.length);
+    const horas = Math.floor(mediaMin / 60);
+    const minutos = mediaMin % 60;
+    const textoTempo = horas > 0 ? `${horas}h ${minutos}min` : `${minutos} min`;
+
+    document.getElementById('estTempoMedio').textContent = textoTempo;
+    document.getElementById('estTempoMedioDetalhe').textContent =
+      `Média calculada sobre ${itensConcluidos.length} ${itensConcluidos.length === 1 ? 'solicitação concluída' : 'solicitações concluídas'}.`;
+  }
+
+  // 3. Taxa de Resolução e Barra de Progresso
+  const pctConcluidas = total > 0 ? Math.round((concluidas / total) * 100) : 0;
+  const pctAndamento = total > 0 ? Math.round((andamento / total) * 100) : 0;
+
+  document.getElementById('estTaxaConclusao').textContent = `${pctConcluidas}% concluído`;
+  document.getElementById('barraProgressoConcluidas').style.width = `${pctConcluidas}%`;
+  document.getElementById('barraProgressoAndamento').style.width = `${pctAndamento}%`;
+  document.getElementById('estTaxaDetalhe').textContent =
+    `${concluidas} concluídas (${pctConcluidas}%) e ${andamento} em andamento (${pctAndamento}%) de ${total} registradas.`;
+
+  // 4. Categoria com Maior Demanda
+  if (total === 0) {
+    document.getElementById('estCategoriaTopo').textContent = '-';
+    document.getElementById('estCategoriaDetalhe').textContent = 'Nenhuma solicitação registrada.';
+  } else {
+    const contagemCategorias = {};
+    todas.forEach((s) => {
+      contagemCategorias[s.categoria] = (contagemCategorias[s.categoria] || 0) + 1;
+    });
+
+    let categoriaLider = '';
+    let maiorQtd = 0;
+    Object.entries(contagemCategorias).forEach(([cat, qtd]) => {
+      if (qtd > maiorQtd) {
+        maiorQtd = qtd;
+        categoriaLider = cat;
+      }
+    });
+
+    const pctCat = Math.round((maiorQtd / total) * 100);
+    document.getElementById('estCategoriaTopo').textContent = categoriaLider;
+    document.getElementById('estCategoriaDetalhe').textContent =
+      `Concentra ${maiorQtd} de ${total} solicitações (${pctCat}% do volume total).`;
+  }
 }

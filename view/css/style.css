@@ -442,3 +442,52 @@ footer.fixed-bottom {
     max-width: 160px;
   }
 }
+
+/* ========================================================================= */
+/* GRÁFICO DE ROSCA (DOUGHNUT CHART SVG) E MODAL DE ESTIMATIVAS              */
+/* ========================================================================= */
+.doughnut-chart-container {
+  position: relative;
+  width: 170px;
+  height: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.doughnut-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.doughnut-segment {
+  fill: none;
+  stroke-width: 6.5;
+  transition: stroke-dasharray 0.5s ease, stroke-width 0.18s ease, opacity 0.18s ease;
+  cursor: pointer;
+}
+
+.doughnut-segment:hover {
+  stroke-width: 8;
+  opacity: 0.92;
+}
+
+.doughnut-center-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  text-align: center;
+}
+
+.doughnut-legend-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
